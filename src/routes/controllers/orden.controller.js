@@ -8,8 +8,6 @@ export const crearOrden = async (req, res) => {
     const {
       id_tecnico,
       id_paciente,
-      id_admisionista,
-      id_sede,
       examenes,
       paquetes,
       req_paquetes,
@@ -28,8 +26,6 @@ export const crearOrden = async (req, res) => {
     await connection.query(
       `insert into orden(id_tecnico,
         id_paciente,
-        id_admisionista,
-        id_sede,
         examenes,
         paquetes,
         req_paquetes,
@@ -43,12 +39,10 @@ export const crearOrden = async (req, res) => {
         valor_examenes,
         valor_paquetes,
         valor_factura
-        ) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+        ) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
       [
         id_tecnico,
         id_paciente,
-        id_admisionista,
-        id_sede,
         examenes || "NO",
         paquetes || "NO",
         req_paquetes || "NO",
@@ -91,6 +85,92 @@ export const obtenerListaOrden = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       message: "OCURRIO UN ERROR AL LISTAR LAS ORDENES",
+      error: error,
+    });
+
+    await connection.rollback();
+  } finally {
+    connection.release();
+  }
+};
+
+export const obtenerListaOrdenTecnico = async (req, res) => {
+  const connection = await pool.getConnection();
+
+  try {
+    connection.beginTransaction();
+
+    const { documento } = req.params;
+
+    const respuesta = await connection.query(
+      "select * from orden where id_tecnico = ?  && estado = ?",
+      [documento, "ACTIVA"]
+    );
+
+    await connection.commit();
+    res.status(200).json({ respuesta: respuesta[0] });
+  } catch (error) {
+    res.status(500).json({
+      message: "OCURRIO UN ERROR AL LISTAR LAS ORDENES DEL TECNICO",
+      error: error,
+    });
+
+    await connection.rollback();
+  } finally {
+    connection.release();
+  }
+};
+
+export const CancelarOrden = async (req, res) => {
+  const connection = await pool.getConnection();
+  const idOrden = req.params.idOrden;
+
+  try {
+    connection.beginTransaction();
+
+    const respuesta = await connection.query(
+      `
+    update orden
+      set estado= ?
+      where id_orden =?
+    
+    `,
+      ["CANCELADO", idOrden]
+    );
+
+    await connection.commit();
+    res.status(200).json({ respuesta: respuesta[0] });
+  } catch (error) {
+    res.status(500).json({
+      message: "OCURRIO UN ERROR AL CANCELAR LA ORDEN",
+      error: error,
+    });
+
+    await connection.rollback();
+  } finally {
+    connection.release();
+  }
+};
+
+export const ImprimirOrden = async (req, res) => {
+  const connection = await pool.getConnection();
+
+  try {
+    connection.beginTransaction();
+
+    const { documento } = req.params;
+    const { fecha_examen } = req.body;
+
+    const respuesta = await connection.query(
+      "select * from orden where id_tecnico = ?  && estado = ?  && fecha_examen =? ",
+      [documento, "ACTIVA", fecha_examen]
+    );
+
+    await connection.commit();
+    res.status(200).json({ respuesta: respuesta[0] });
+  } catch (error) {
+    res.status(500).json({
+      message: "OCURRIO UN ERROR AL LISTAR LAS ORDENES DEL TECNICO",
       error: error,
     });
 

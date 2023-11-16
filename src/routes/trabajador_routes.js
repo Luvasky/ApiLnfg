@@ -5,6 +5,8 @@ import {
   obtenerTrabajadorDocumento,
   actualizarTrabajador,
   obtenerTecnicos,
+  inhabilitar,
+  habilitar,
 } from "./controllers/trabajador_controller.js";
 
 const router = Router();
@@ -17,5 +19,7 @@ router.get(
 );
 router.put("/actualizarTrabajador/:documentoReq", actualizarTrabajador);
 router.get("/obtenerTecnico", obtenerTecnicos);
+router.put("/inhabilitar", inhabilitar);
+router.put("/habilitar", habilitar);
 
 export default router;

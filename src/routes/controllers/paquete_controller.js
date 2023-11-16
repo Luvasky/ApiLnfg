@@ -43,6 +43,27 @@ export const obtenerListaPaquete = async (req, res) => {
   }
 };
 
+export const obtenerListaPaqueteSinNO = async (req, res) => {
+  const connenction = await pool.getConnection();
+  connenction.beginTransaction();
+
+  try {
+    const respuesta =
+      await connenction.query(`select *from paquete where nombre != "NO"
+  `);
+
+    res.status(200).json({ respuesta: respuesta[0] });
+  } catch (error) {
+    await connenction.rollback();
+    res.status(500).json({
+      message: "OCURRIO UN ERROR AL TRAER LOS PAQUETES",
+      error: error,
+    });
+  } finally {
+    connenction.release();
+  }
+};
+
 export const actualizarPaquete = async (req, res) => {
   const connenction = await pool.getConnection();
   connenction.beginTransaction();

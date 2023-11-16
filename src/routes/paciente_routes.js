@@ -4,6 +4,7 @@ import {
   obtenerListaPacientes,
   obtenerPacienteDocumento,
   actualizarPaciente,
+  actualizarDireccion,
 } from "./controllers/paciente_controller.js";
 
 const routerPaciente = Router();
@@ -15,5 +16,6 @@ routerPaciente.get(
   obtenerPacienteDocumento
 );
 routerPaciente.put("/actualizarPaciente/:documentoReq", actualizarPaciente);
+routerPaciente.put("/actualizarDireccion/:documento", actualizarDireccion);
 
 export default routerPaciente;

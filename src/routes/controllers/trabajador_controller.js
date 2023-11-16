@@ -1,40 +1,5 @@
 import { pool } from "./db.js";
 
-export const obtenerTrabajadores = async (req, res) => {
-  let connnection;
-
-  try {
-    connnection = await pool.getConnection();
-    connnection.beginTransaction();
-
-    const respuesta = await connnection.query(
-      `select persona.tipo_documento, persona.documento, persona.nombre, persona.segundo_nombre, persona.primer_apellido, persona.segundo_apellido, persona.edad, persona.email,
-      persona.fecha_nacimiento, persona.celular, persona.sexo, trabajador.id_sede, trabajador.id_trabajador, usuario.id_usuario, usuario.contrasena, usuario.rol, usuario.estado
-      from persona 
-      inner join usuario on persona.documento = usuario.documento
-      inner join trabajador on persona.documento = trabajador.documento
-      
-      `
-    );
-
-    await connnection.commit();
-    res.status(200).json({ respuesta: respuesta[0] });
-  } catch (error) {
-    if (connnection) {
-      await connnection.rollback();
-    }
-
-    res.status(500).json({
-      message: "OCURRIO UN ERROR AL MOMENTO DE LISTAR LOS TRABAJADORES",
-      error: error,
-    });
-  } finally {
-    if (connnection) {
-      connnection.release();
-    }
-  }
-};
-
 export const crearTrabajador = async (req, res) => {
   const {
     tipo_documento,
@@ -49,7 +14,6 @@ export const crearTrabajador = async (req, res) => {
     celular,
     estado,
     rol,
-    id_sede,
     contrasena,
     sexo,
   } = req.body;
@@ -77,49 +41,48 @@ export const crearTrabajador = async (req, res) => {
       ]
     );
 
-    await connnection.query(
-      `insert into trabajador (documento,  id_sede) values(?,?)`,
-      [documento, id_sede]
-    );
+    await connnection.query(`insert into trabajador (documento) values(?)`, [
+      documento,
+    ]);
 
     await connnection.query(
       `insert into usuario (documento, contrasena, estado, rol) values(?,?,?,?)`,
       [documento, contrasena, "ACTIVO".toUpperCase(), rol.toUpperCase()]
     );
 
-    switch (rol) {
-      case "ADMINISTRADOR":
-        await connnection.query(
-          "insert into administrator (id_trabajador)values(?)",
-          [documento]
-        );
+    // switch (rol) {
+    //   case "ADMINISTRADOR":
+    //     await connnection.query(
+    //       "insert into administrador (id_trabajador)values(?)",
+    //       [documento]
+    //     );
 
-        break;
+    //     break;
 
-      case "ADMISIONISTA":
-        await connnection.query(
-          "insert into admisionista (id_trabajador)values(?)",
-          [documento]
-        );
+    //   case "ADMISIONISTA":
+    //     await connnection.query(
+    //       "insert into admisionista (id_trabajador)values(?)",
+    //       [documento]
+    //     );
 
-        break;
+    //     break;
 
-      case "TECNICO":
-        await connnection.query(
-          "insert into tecnico (id_trabajador)values(?)",
-          [documento]
-        );
+    //   case "TECNICO":
+    //     await connnection.query(
+    //       "insert into tecnico (id_trabajador)values(?)",
+    //       [documento]
+    //     );
 
-        break;
+    //     break;
 
-      case "LABORATORIO":
-        await connnection.query(
-          "insert into laboratorio (id_trabajador)values(?)",
-          [documento]
-        );
+    //   case "LABORATORIO":
+    //     await connnection.query(
+    //       "insert into laboratorio (id_trabajador)values(?)",
+    //       [documento]
+    //     );
 
-        break;
-    }
+    //     break;
+    // }
 
     await connnection.commit();
     res.status(200).json({ respuesta: "USUARIO CREADO CON ÉXITO" });
@@ -136,6 +99,40 @@ export const crearTrabajador = async (req, res) => {
   }
 };
 
+export const obtenerTrabajadores = async (req, res) => {
+  let connection;
+
+  try {
+    connection = await pool.getConnection();
+    await connection.beginTransaction();
+
+    const respuesta = await connection.query(
+      `SELECT persona.tipo_documento, persona.documento, persona.nombre, persona.segundo_nombre, persona.primer_apellido, persona.segundo_apellido, persona.edad, persona.email,
+      persona.fecha_nacimiento, persona.celular, persona.sexo, usuario.id_usuario, usuario.contrasena, usuario.rol, usuario.estado
+      FROM persona 
+      INNER JOIN usuario ON persona.documento = usuario.documento`
+    );
+
+    await connection.commit();
+    res.status(200).json({ respuesta });
+  } catch (error) {
+    if (connection) {
+      await connection.rollback();
+    }
+
+    res.status(500).json({
+      message: "OCURRIO UN ERROR AL MOMENTO DE LISTAR LOS TRABAJADORES",
+      error: error.message, // Usar error.message para obtener detalles del error
+    });
+  } finally {
+    if (connection) {
+      connection.release();
+    }
+
+    connection.release();
+  }
+};
+
 export const obtenerTrabajadorDocumento = async (req, res) => {
   let connnection;
   const { documento } = req.params;
@@ -146,11 +143,10 @@ export const obtenerTrabajadorDocumento = async (req, res) => {
 
     const respuesta = await connnection.query(
       `select persona.tipo_documento, persona.documento, persona.nombre, persona.segundo_nombre, persona.primer_apellido, persona.segundo_apellido, persona.edad, persona.email,
-      persona.fecha_nacimiento, persona.celular, persona.sexo, trabajador.id_sede, trabajador.id_trabajador, usuario.id_usuario, usuario.contrasena, usuario.rol, usuario.estado
+      persona.fecha_nacimiento, persona.celular, persona.sexo,usuario.id_usuario, usuario.contrasena, usuario.rol, usuario.estado
       from persona 
       inner join usuario on persona.documento = usuario.documento
-      inner join trabajador on persona.documento = trabajador.documento
-      where persona.documento = ?
+     where persona.documento = ?
       `,
       [documento]
     );
@@ -223,14 +219,14 @@ export const actualizarTrabajador = async (req, res) => {
       ]
     );
 
-    await connection.query(
-      `
-      UPDATE trabajador
-      SET  id_sede = ?
-      WHERE documento = ?
-     `,
-      [id_sede, documentoReq]
-    );
+    // await connection.query(
+    //   `
+    //   UPDATE trabajador
+    //   SET  id_sede = ?
+    //   WHERE documento = ?
+    //  `,
+    //   [id_sede, documentoReq]
+    // );
 
     await connection.query(
       `
@@ -283,6 +279,74 @@ export const obtenerTecnicos = async (req, res) => {
 
     res.status(500).json({
       message: "OCURRIO UN ERROR AL MOMENTO DE LISTAR LOS TRABAJADORES",
+      error: error,
+    });
+  } finally {
+    if (connnection) {
+      connnection.release();
+    }
+  }
+};
+
+export const inhabilitar = async (req, res) => {
+  let connnection;
+  const { documento } = req.body;
+
+  try {
+    connnection = await pool.getConnection();
+    connnection.beginTransaction();
+
+    const respuesta = await connnection.query(
+      `UPDATE usuario
+      SET estado = ?  
+      WHERE documento = ?   
+      `,
+      ["INACTIVO", documento]
+    );
+
+    await connnection.commit();
+    res.status(200).json({ respuesta: respuesta[0] });
+  } catch (error) {
+    if (connnection) {
+      await connnection.rollback();
+    }
+
+    res.status(500).json({
+      message: "OCURRIO UN ERROR AL MOMENTO DE CAMBIAR EL ESTADO",
+      error: error,
+    });
+  } finally {
+    if (connnection) {
+      connnection.release();
+    }
+  }
+};
+
+export const habilitar = async (req, res) => {
+  let connnection;
+  const { documento } = req.body;
+
+  try {
+    connnection = await pool.getConnection();
+    connnection.beginTransaction();
+
+    const respuesta = await connnection.query(
+      `UPDATE usuario
+      SET estado = ?  
+      WHERE documento = ?   
+      `,
+      ["ACTIVO", documento]
+    );
+
+    await connnection.commit();
+    res.status(200).json({ respuesta: respuesta[0] });
+  } catch (error) {
+    if (connnection) {
+      await connnection.rollback();
+    }
+
+    res.status(500).json({
+      message: "OCURRIO UN ERROR AL MOMENTO DE CAMBIAR EL ESTADO",
       error: error,
     });
   } finally {

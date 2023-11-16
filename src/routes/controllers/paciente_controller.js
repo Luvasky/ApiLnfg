@@ -242,3 +242,69 @@ export const actualizarPaciente = async (req, res) => {
     });
   }
 };
+
+export const actualizarDireccion = async (req, res) => {
+  let connection; // Declarar la variable de conexión fuera del bloque try-catch
+  const { documento } = req.params;
+  const { direccion, descripcion } = req.body;
+
+  try {
+    connection = await pool.getConnection();
+    connection.beginTransaction();
+
+    if (direccion.length !== 0 && descripcion.length === 0) {
+      const respuesta = await connection.query(
+        `
+    UPDATE paciente
+    SET direccion = ?
+    WHERE documento = ?;
+    
+    `,
+        [direccion, documento]
+      );
+      res.status(200).json({ respuesta: respuesta }); // Cambiar el estado HTTP a 200 para indicar éxito
+
+      await connection.commit();
+    } else if (direccion.length === 0 && descripcion.length !== 0) {
+      const respuesta = await connection.query(
+        `
+    UPDATE paciente
+    SET desc_dir = ?
+    WHERE documento = ?;
+    
+    `,
+        [descripcion, documento]
+      );
+      res.status(200).json({ respuesta: respuesta }); // Cambiar el estado HTTP a 200 para indicar éxito
+      console.log("ESTOY AQUI");
+      await connection.commit();
+    } else {
+      const respuesta = await connection.query(
+        `
+        UPDATE paciente
+        SET direccion = ?,
+            desc_dir = ?
+        WHERE documento = ?;
+        
+    
+    `,
+        [direccion, descripcion, documento]
+      );
+      res.status(200).json({ respuesta: respuesta }); // Cambiar el estado HTTP a 200 para indicar éxito
+
+      await connection.commit();
+    }
+  } catch (error) {
+    if (connection) {
+      await connection.rollback();
+    }
+    console.error("ERROR AL ACTUALIZAR EL PACIENTE:", error);
+    res
+      .status(500)
+      .json({ error: "ERROR AL TRAER LOS DATOS DE LOS PACIENTES" });
+  } finally {
+    if (connection) {
+      connection.release(); // Cerrar la conexión en el bloque finally
+    }
+  }
+};

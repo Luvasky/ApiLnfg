@@ -97,6 +97,32 @@ export const obetenerListaExamenes = async (req, res) => {
   }
 };
 
+export const obetenerListaExamenesSinNo = async (req, res) => {
+  let connection; // Declarar la variable de conexión fuera del bloque try-catch
+
+  try {
+    connection = await pool.getConnection();
+    connection.beginTransaction();
+
+    const respuesta =
+      await connection.query(`select *from examen where nombre != "NO"
+    `);
+
+    await connection.commit();
+    res.status(200).json({ respuesta: respuesta[0] }); // Cambiar el estado HTTP a 200 para indicar éxito
+  } catch (error) {
+    if (connection) {
+      await connection.rollback();
+    }
+    console.error("ERROR AL OBTENER LOS DATOS DEL EXAMEN:", error);
+    res.status(500).json({ error: "ERROR AL TRAER LOS DATOS DE LOS EXAMENES" });
+  } finally {
+    if (connection) {
+      connection.release(); // Cerrar la conexión en el bloque finally
+    }
+  }
+};
+
 export const obtenerExamenId = async (req, res) => {
   let connection;
 
