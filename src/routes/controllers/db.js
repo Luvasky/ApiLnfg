@@ -8,7 +8,7 @@ import {
 } from "../../config.js";
 
 export const pool = createPool({
-  host: "locahost",
+  host: "localhost",
   user: "root",
   password: "1065828184",
   port: 3306,
