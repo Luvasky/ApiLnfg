@@ -9,6 +9,7 @@ import routerPaquete from "./routes/paquete_routes.js";
 import routerOrden from "./routes/orden_routes.js";
 import routerEmpresa from "./routes/empresa_routes.js";
 import routerSolicitud from "./routes/solicitud_routes.js";
+import { PORT } from "./config.js";
 const app = express();
 
 app.use(cors());
@@ -24,5 +25,5 @@ app.use("/apiLNFG", routerOrden);
 app.use("/apiLNFG", routerEmpresa);
 app.use("/apiLNFG", routerSolicitud);
 
-app.listen(3000);
+app.listen(PORT);
 console.log("Server on port 3000");

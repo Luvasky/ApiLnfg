@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "test": "autocannon http://localhost:3000/apiLNFG/obtenerListaPaciente",
-    "dev": "nodemon src/index.js"
+    "dev": "nodemon src/index.js",
+    "start": "node src/index.js"
   },
   "keywords": [],
   "author": "",
