@@ -110,7 +110,10 @@ export const obtenerTrabajadores = async (req, res) => {
       `SELECT persona.tipo_documento, persona.documento, persona.nombre, persona.segundo_nombre, persona.primer_apellido, persona.segundo_apellido, persona.edad, persona.email,
       persona.fecha_nacimiento, persona.celular, persona.sexo, usuario.id_usuario, usuario.contrasena, usuario.rol, usuario.estado
       FROM persona 
-      INNER JOIN usuario ON persona.documento = usuario.documento`
+      INNER JOIN usuario ON persona.documento = usuario.documento
+      where rol != ?, 
+      `,
+      ["USUARIO"]
     );
 
     await connection.commit();

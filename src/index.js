@@ -9,7 +9,13 @@ import routerPaquete from "./routes/paquete_routes.js";
 import routerOrden from "./routes/orden_routes.js";
 import routerEmpresa from "./routes/empresa_routes.js";
 import routerSolicitud from "./routes/solicitud_routes.js";
+import routerNotificacion from "./routes/notificacion_routes.js";
 import { PORT } from "./config.js";
+import webpush from "./web_push.js";
+import dotenv from "dotenv";
+
+dotenv.config();
+
 const app = express();
 
 app.use(cors());
@@ -24,6 +30,7 @@ app.use("/apiLNFG", routerPaquete);
 app.use("/apiLNFG", routerOrden);
 app.use("/apiLNFG", routerEmpresa);
 app.use("/apiLNFG", routerSolicitud);
+app.use("/apiLNFG", routerNotificacion);
 
 app.listen(PORT);
 console.log("Server on port 3000");
