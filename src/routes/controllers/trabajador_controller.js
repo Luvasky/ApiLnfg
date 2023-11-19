@@ -111,7 +111,7 @@ export const obtenerTrabajadores = async (req, res) => {
       persona.fecha_nacimiento, persona.celular, persona.sexo, usuario.id_usuario, usuario.contrasena, usuario.rol, usuario.estado
       FROM persona 
       INNER JOIN usuario ON persona.documento = usuario.documento
-      where rol != ?, 
+      where rol != ?
       `,
       ["USUARIO"]
     );
