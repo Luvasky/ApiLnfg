@@ -69,6 +69,31 @@ export const obtenerListaSolicitud = async (req, res) => {
   }
 };
 
+export const obtenerListaSolicitudTomada = async (req, res) => {
+  const connection = await pool.getConnection();
+
+  try {
+    connection.beginTransaction();
+
+    const respuesta = await connection.query(
+      "select *from solicitud where estado= ?",
+      ["TOMADA"]
+    );
+
+    await connection.commit();
+    res.status(200).json({ respuesta: respuesta[0] });
+  } catch (error) {
+    res.status(500).json({
+      message: "OCURRIO UN ERROR AL LISTAR LAS SOLICITUDES",
+      error: error,
+    });
+
+    await connection.rollback();
+  } finally {
+    connection.release();
+  }
+};
+
 export const crearSolicitudWompi = async (req, res) => {
   const connection = await pool.getConnection();
 
