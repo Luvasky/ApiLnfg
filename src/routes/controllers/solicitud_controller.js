@@ -50,7 +50,10 @@ export const obtenerListaSolicitud = async (req, res) => {
   try {
     connection.beginTransaction();
 
-    const respuesta = await connection.query("select *from solicitud");
+    const respuesta = await connection.query(
+      "select *from solicitud where estado= ?",
+      ["PENDIENTE"]
+    );
 
     await connection.commit();
     res.status(200).json({ respuesta: respuesta[0] });
