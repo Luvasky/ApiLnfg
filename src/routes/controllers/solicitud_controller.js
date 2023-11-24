@@ -255,7 +255,7 @@ export const asignarTomada = async (req, res) => {
       `
     update orden
       set estado= ?
-      where id_orden =?
+      where id_solicitud =?
     
     `,
       ["TOMADA", idOrden]
