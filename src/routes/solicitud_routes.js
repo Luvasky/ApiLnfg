@@ -12,8 +12,8 @@ import {
 } from "./controllers/solicitud_controller.js";
 
 const routerSolicitud = Router();
-routerOrden.put("/asignarTomada", asignarTomada);
 
+routerSolicitud.put("/asignarTomada", asignarTomada);
 routerSolicitud.post("/crearSolicitud", crearSolicitud);
 routerSolicitud.post("/crearSolicitudWompi", crearSolicitudWompi);
 routerSolicitud.get("/obtenerListaSolicitud", obtenerListaSolicitud);
