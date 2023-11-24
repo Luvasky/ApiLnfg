@@ -243,3 +243,33 @@ export const recuperarPass = async (req, res) => {
     }
   }
 };
+
+export const asignarTomada = async (req, res) => {
+  const connection = await pool.getConnection();
+  const { idOrden } = req.body;
+
+  try {
+    connection.beginTransaction();
+
+    await connection.query(
+      `
+    update orden
+      set estado= ?
+      where id_orden =?
+    
+    `,
+      ["TOMADA", idOrden]
+    );
+
+    res.status(200).json({ message: "CAMBIO A TOMADA" });
+
+    await connection.commit();
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "ERROR AL ENVIAR LA SOLICITUD", error: error });
+    await connection.rollback();
+  } finally {
+    connection.release();
+  }
+};

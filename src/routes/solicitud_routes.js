@@ -1,5 +1,6 @@
 import { Router } from "express";
 import {
+  asignarTomada,
   borrarSolicitud,
   crearSolicitud,
   crearSolicitudWompi,
@@ -11,6 +12,7 @@ import {
 } from "./controllers/solicitud_controller.js";
 
 const routerSolicitud = Router();
+routerOrden.put("/asignarTomada/:idOrden", asignarTomada);
 
 routerSolicitud.post("/crearSolicitud", crearSolicitud);
 routerSolicitud.post("/crearSolicitudWompi", crearSolicitudWompi);
