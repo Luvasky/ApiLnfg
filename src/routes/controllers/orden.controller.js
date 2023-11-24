@@ -179,3 +179,61 @@ export const ImprimirOrden = async (req, res) => {
     connection.release();
   }
 };
+
+export const realizada = async (req, res) => {
+  const connection = await pool.getConnection();
+  const { idOrden } = req.body;
+
+  try {
+    connection.beginTransaction();
+
+    await connection.query(
+      `
+      update orden
+      set estado= ?
+      where id_orden = ?    
+    `,
+      ["REALIZADA", idOrden]
+    );
+
+    res.status(200).json({ message: "CAMBIO A RELIZADA" });
+
+    await connection.commit();
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "ERROR AL ENVIAR LA SOLICITUD", error: error });
+    await connection.rollback();
+  } finally {
+    connection.release();
+  }
+};
+
+export const rechazada = async (req, res) => {
+  const connection = await pool.getConnection();
+  const { idOrden } = req.body;
+
+  try {
+    connection.beginTransaction();
+
+    await connection.query(
+      `
+      update orden
+      set estado= ?
+      where id_orden = ?    
+    `,
+      ["RECHAZADA", idOrden]
+    );
+
+    res.status(200).json({ message: "CAMBIO A RECHAZADA" });
+
+    await connection.commit();
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "ERROR AL ENVIAR LA SOLICITUD", error: error });
+    await connection.rollback();
+  } finally {
+    connection.release();
+  }
+};

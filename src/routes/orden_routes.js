@@ -5,6 +5,8 @@ import {
   crearOrden,
   obtenerListaOrden,
   obtenerListaOrdenTecnico,
+  realizada,
+  rechazada,
 } from "./controllers/orden.controller.js";
 
 const routerOrden = Router();
@@ -17,4 +19,7 @@ routerOrden.get(
   obtenerListaOrdenTecnico
 );
 routerOrden.post("/ImprimirOrden/:documento", ImprimirOrden);
+routerOrden.put("/realizada", realizada);
+routerOrden.put("/rechazada", rechazada);
+
 export default routerOrden;
