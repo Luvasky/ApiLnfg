@@ -253,7 +253,7 @@ export const asignarTomada = async (req, res) => {
 
     await connection.query(
       `
-    update orden
+    update solicitud
       set estado= ?
       where id_solicitud =?
     
