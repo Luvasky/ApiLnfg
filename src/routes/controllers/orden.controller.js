@@ -103,8 +103,8 @@ export const obtenerListaOrdenTecnico = async (req, res) => {
     const { documento } = req.params;
 
     const respuesta = await connection.query(
-      "select * from orden where id_tecnico = ?  && estado = ?",
-      [documento, "ACTIVA"]
+      "select * from orden where id_tecnico = ?  && estado != ?",
+      [documento, "CANCELADO"]
     );
 
     await connection.commit();
