@@ -22,6 +22,6 @@ routerOrden.get(
 routerOrden.post("/ImprimirOrden/:documento", ImprimirOrden);
 routerOrden.put("/realizada", realizada);
 routerOrden.put("/rechazada", rechazada);
-routerOrden.get("/rango", rango);
+routerOrden.post("/rango", rango);
 
 export default routerOrden;
