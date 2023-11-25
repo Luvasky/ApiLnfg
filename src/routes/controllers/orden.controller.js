@@ -237,3 +237,35 @@ export const rechazada = async (req, res) => {
     connection.release();
   }
 };
+
+export const rango = async (req, res) => {
+  const connection = await pool.getConnection();
+
+  try {
+    connection.beginTransaction();
+
+    const { inicial, final } = req.body;
+
+    const respuesta = await connection.query(
+      `
+      SELECT *
+      FROM orden
+      WHERE fecha_examen BETWEEN ? AND ?;
+       
+      `,
+      [inicial, final]
+    );
+
+    await connection.commit();
+    res.status(200).json({ respuesta: respuesta[0] });
+  } catch (error) {
+    res.status(500).json({
+      message: "OCURRIO UN ERROR AL LISTAR LAS ORDENES DEL TECNICO",
+      error: error,
+    });
+
+    await connection.rollback();
+  } finally {
+    connection.release();
+  }
+};
