@@ -9,6 +9,7 @@ import {
   obtenerListaSolicitudTomada,
   obtenerListaSolicitudWompi,
   recuperarPass,
+  wompiTomada,
 } from "./controllers/solicitud_controller.js";
 
 const routerSolicitud = Router();
@@ -25,5 +26,6 @@ routerSolicitud.get("/obtenerListaSolicitudWompi", obtenerListaSolicitudWompi);
 routerSolicitud.delete("/borrarSolicitud/:idReq", borrarSolicitud);
 routerSolicitud.get("/listarSlicitudWompiRef/:idReq", listarSlicitudWompiRef);
 routerSolicitud.post("/recuperarPass", recuperarPass);
+routerSolicitud.post("/wompiTomada", wompiTomada);
 
 export default routerSolicitud;
