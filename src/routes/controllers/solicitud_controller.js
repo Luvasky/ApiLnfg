@@ -284,7 +284,7 @@ export const wompiTomada = async (req, res) => {
       `
       update wompi_solicitud
       set estado= ?
-      where id_solicitud = ?    
+      where idwompi_solicitud = ?    
     `,
       ["TOMADA", idOrden]
     );
